@@ -7,6 +7,7 @@ import com.quang.dream_shop.model.Product;
 import com.quang.dream_shop.repository.CategoryRepository;
 import com.quang.dream_shop.repository.ProductRepository;
 import com.quang.dream_shop.request.AddProductRequest;
+import com.quang.dream_shop.request.ProductUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,17 +28,27 @@ public class ProductService implements IProductService {
             throw new AlreadyExistsException( "Product with the same name " + request.getName() +" " +
                     "and brand " + request.getBrand()+ " already exists.");
         }
-//        Category category = Optional.ofNullable(categoryRepository.findByName(request.getCategory().getName()))
-//                .orElseGet(() -> {
-//                    Category newCategory = new Category(request.getCategory().getName());
-//                    return categoryRepository.save(newCategory);
-//
-//                });
-//        request.setCategory((category));
-//
-//        return productRepository.save(createProduct(request , category));
-        return null;
+        else {
+            Category category = Optional.ofNullable(categoryRepository.findByName(request.getCategory().getName()))
+                    .orElseGet(() -> {
+                        Category newCategory = new Category(request.getCategory().getName());
+                        return categoryRepository.save(newCategory);
 
+                    });
+            request.setCategory(category);
+            return productRepository.save(createProduct(request, category));
+        }
+    }
+
+    private Product createProduct(AddProductRequest request, Category category) {
+        return new Product(
+                request.getName(),
+                request.getBrand(),
+                request.getPrice(),
+                request.getInventory(),
+                request.getDescription(),
+                category
+        );
     }
 
     private boolean productExists(String name, String brand) {
@@ -50,14 +61,16 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Product updateProduct(Long id, Product product) {
-        return productRepository.findById(id).map(existingProduct -> {
-            existingProduct.setName(product.getName());
-            existingProduct.setBrand(product.getBrand());
-            existingProduct.setPrice(product.getPrice());
-            existingProduct.setCategory(product.getCategory());
-            return productRepository.save(existingProduct);
-        }).orElseThrow(() -> new ProductNotFoundException("Product not found"));
+    public Product updateProduct(Product existsProduct , ProductUpdateRequest request) {
+        existsProduct.setName(request.getName());
+        existsProduct.setBrand(request.getBrand());
+        existsProduct.setPrice(request.getPrice());
+        existsProduct.setInventory(request.getInventory());
+        existsProduct.setDescription(request.getDescription());
+
+        Category category = categoryRepository.findByName(request.getCategory().getName()) ;
+        existsProduct.setCategory(category);
+        return  existsProduct;
     }
 
     @Override

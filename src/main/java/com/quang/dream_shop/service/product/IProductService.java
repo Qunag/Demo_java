@@ -2,13 +2,14 @@ package com.quang.dream_shop.service.product;
 
 import com.quang.dream_shop.model.Product;
 import com.quang.dream_shop.request.AddProductRequest;
+import com.quang.dream_shop.request.ProductUpdateRequest;
 
 import java.util.List;
 
 public interface IProductService {
     Product addProduct(AddProductRequest request);
     Product getProductById(Long id);
-    Product updateProduct(Long id, Product product);
+    Product updateProduct(Product product, ProductUpdateRequest request);
     void deleteProductById(Long id);
 
     List<Product> getAllPProducts();
