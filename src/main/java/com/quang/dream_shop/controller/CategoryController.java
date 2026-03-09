@@ -47,7 +47,8 @@ public class CategoryController {
         }
     }
 
-    @GetMapping
+
+    @GetMapping("/category/{name}")
     public ResponseEntity<ApiResponse> getCategoryByName(@RequestParam String name){
         try {
             Category category = categoryService.getCategoryByName(name);
@@ -91,5 +92,17 @@ public class CategoryController {
                     .body(new ApiResponse("An error occurred while updating the category", null));
         }
     }
+
+    @DeleteMapping("/category/{categoryId}/delete")
+    public ResponseEntity<ApiResponse> deleteCategory(@PathVariable Long categoryId) {
+        try {
+            categoryService.deleteCategoryById(categoryId);
+            return ResponseEntity.ok(new ApiResponse("Category deleted successfully", null));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404)
+                    .body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
 
 }
