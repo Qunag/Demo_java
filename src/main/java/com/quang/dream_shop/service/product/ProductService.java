@@ -13,6 +13,7 @@ import com.quang.dream_shop.repository.ProductRepository;
 import com.quang.dream_shop.request.AddProductRequest;
 import com.quang.dream_shop.request.ProductUpdateRequest;
 import lombok.RequiredArgsConstructor;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -30,22 +31,22 @@ public class ProductService implements IProductService {
     private final ModelMapper modelMapper;
     private final ImageRepository imageRepository;
 
-    @Override
-    public Product addProduct(AddProductRequest request ) {
+    public Product addProduct(AddProductRequest request) {
+
         if(productExists(request.getName(), request.getBrand())){
             throw new AlreadyExistsException( "Product with the same name " + request.getName() +" " +
                     "and brand " + request.getBrand()+ " already exists.");
         }
-        else {
-            Category category = Optional.ofNullable(categoryRepository.findByName(request.getCategory().getName()))
-                    .orElseGet(() -> {
-                        Category newCategory = new Category(request.getCategory().getName());
-                        return categoryRepository.save(newCategory);
 
-                    });
-            request.setCategory(category);
-            return productRepository.save(createProduct(request, category));
-        }
+        Category category = Optional.ofNullable(categoryRepository.findByName(request.getCategory().getName()))
+                .orElseGet(() -> {
+                    Category newCategory = new Category(request.getCategory().getName());
+                    return categoryRepository.save(newCategory);
+
+                });
+        request.setCategory((category));
+        return productRepository.save(createProduct(request , category));
+
     }
 
     private Product createProduct(AddProductRequest request, Category category) {

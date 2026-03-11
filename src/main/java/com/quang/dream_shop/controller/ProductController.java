@@ -9,16 +9,14 @@ import com.quang.dream_shop.request.ProductUpdateRequest;
 import com.quang.dream_shop.response.ApiResponse;
 import com.quang.dream_shop.service.product.IProductService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.smartcardio.ResponseAPDU;
-import javax.swing.text.html.parser.Entity;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @RequiredArgsConstructor
 @Controller
@@ -79,8 +77,19 @@ public class ProductController {
         }
     }
 
+    @DeleteMapping("/product/{productId}/delete")
+    public ResponseEntity<ApiResponse> deleteProduct(@PathVariable Long productId){
+        try {
+            productService.deleteProductById(productId);
+            return ResponseEntity.ok(new ApiResponse("Delete product successfully", null));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404)
+                    .body(new ApiResponse("Product not found", e.getMessage()));
+        }
+    }
 
-    @GetMapping("/product/by-name/{name}")
+
+    @GetMapping("/product/by-name/")
     public ResponseEntity<ApiResponse> getProductByName(@RequestParam String name){
         try{
             List<Product> products = productService.getProductsByName(name);
@@ -98,17 +107,16 @@ public class ProductController {
 
     @GetMapping("/product/by-brand/")
     public ResponseEntity<ApiResponse> getProductsByBrand(@RequestParam String brand){
-        try{
+        try {
             List<Product> products = productService.getProductsByBrand(brand);
             List<ProductDto> convertedProducts = productService.getConvertedProducts(products);
-            if (products.isEmpty()) {
-                return ResponseEntity.status(404)
-                        .body(new ApiResponse("Product not found with brand: " + brand, null));
+            if (products.isEmpty()){
+                return  ResponseEntity.status(404).body(new ApiResponse("No products found for the given brand", null));
             }
-            return ResponseEntity.ok(new ApiResponse("Products retrieved successfully", convertedProducts));
+            return ResponseEntity.ok(new ApiResponse("Get products by brand successfully", convertedProducts));
         } catch (Exception e) {
             return ResponseEntity.status(500)
-                    .body(new ApiResponse("An error occurred while retrieving the products", e.getMessage()));
+                    .body(new ApiResponse("Failed to get products by brand", e.getMessage()));
         }
     }
 
