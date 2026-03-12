@@ -11,14 +11,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Configuration
 public class ShopConfig {
-//    private static final List<String> SECURED_URLS = List.of(
-//            "/api/v1/users/**",
-//            "/api/v1/products/**",
-//            "/api/v1/orders/**",
-//            "/api/v1/carts/**",
-//            "/api/v1/cartItems/**",
-//            "/api/v1/categories/**"
-//    );
 
     @Bean
     public ModelMapper modelMapper() {
