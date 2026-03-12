@@ -4,11 +4,13 @@ package com.quang.dream_shop.service.Cart;
 import com.quang.dream_shop.model.Cart;
 import com.quang.dream_shop.repository.CartItemRepository;
 import com.quang.dream_shop.repository.CartRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +18,7 @@ public class CartService implements ICartService {
 
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
+    private final AtomicLong cartIdGenerator = new AtomicLong(0);
 
 
     @Override
@@ -27,6 +30,7 @@ public class CartService implements ICartService {
         return cartRepository.save(cart);
     }
 
+    @Transactional
     @Override
     public void clearCart(Long cartId) {
         Cart cart = getCart(cartId);
@@ -40,5 +44,13 @@ public class CartService implements ICartService {
     public BigDecimal getTotalPrice(Long cartId) {
         Cart cart = getCart(cartId);
         return cart.getTotalAmount() != null ? cart.getTotalAmount() : BigDecimal.ZERO;
+    }
+
+
+    public AtomicLong getCartIdGenerator() {
+        Cart newCart = new Cart();
+        newCart.setId(cartIdGenerator.incrementAndGet());
+        cartRepository.save(newCart);
+        return cartIdGenerator;
     }
 }

@@ -1,9 +1,11 @@
 package com.quang.dream_shop.controller;
 
 
+import com.quang.dream_shop.exception.ResourceNotFoundException;
 import com.quang.dream_shop.model.Cart;
 import com.quang.dream_shop.response.ApiResponse;
-import com.quang.dream_shop.service.Cart.CartService;
+
+import com.quang.dream_shop.service.Cart.ICartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,12 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.swing.text.html.parser.Entity;
+import java.math.BigDecimal;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.prefix}/carts")
 public class CartContoller {
-    private final CartService cartService;
+    private final ICartService cartService;
 
 
     @GetMapping("/cart/{cartId}")
@@ -45,11 +48,12 @@ public class CartContoller {
     @GetMapping("/cart/{cartId}/total-price")
     public ResponseEntity<ApiResponse> getTotalPrice(@PathVariable Long cartId) {
         try {
-            return ResponseEntity.ok(new ApiResponse("Get total price successfully", cartService.getTotalPrice(cartId)));
-        } catch (Exception e) {
+            BigDecimal totalPrice = cartService.getTotalPrice(cartId);
+            return ResponseEntity.ok(new ApiResponse("Total price" , totalPrice));
+        } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(500).body(new ApiResponse("Get total price failed", e.getMessage()));
         }
     }
 
-    public
+
 }

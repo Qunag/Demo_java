@@ -1,6 +1,7 @@
 package com.quang.dream_shop.service.Cart;
 
 import com.quang.dream_shop.model.Cart;
+import com.quang.dream_shop.model.CartItem;
 
 import java.math.BigDecimal;
 
