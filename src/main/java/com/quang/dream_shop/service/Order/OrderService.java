@@ -7,11 +7,13 @@ import com.quang.dream_shop.model.OrderItem;
 import com.quang.dream_shop.model.Product;
 import com.quang.dream_shop.repository.OrderRepository;
 import com.quang.dream_shop.repository.ProductRepository;
+import com.quang.dream_shop.service.Cart.ICartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -20,10 +22,12 @@ public class OrderService implements IOrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final ICartService cartService;
 
 
     private Order createOrder (Cart cart){
         Order order = new Order();
+        order.setUser(cart.getUser());
         order.setOrderStatus(OrderStatus.PENDING);
         order.setOrderDate(LocalDate.now());
         return order;
@@ -55,17 +59,40 @@ public class OrderService implements IOrderService {
 
     
     @Override
-    public Order placeOrder(Long userId, Order order) {
-        return null;
+    public Order placeOrder(Long userId) {
+        Cart cart = cartService.getCartByUserId(userId);
+        Order order = createOrder(cart);
+        List<OrderItem> orderItemsList = createOrderItems(order, cart);
+
+        order.setOrderItems(new HashSet<>(orderItemsList));
+        order.setTotalAmount(calculateTotalAmount(orderItemsList));
+
+        Order savedOrder = orderRepository.save(order);
+        cartService.clearCart(cart.getId());
+        return savedOrder;
+
     }
 
     @Override
-    public Order getOrderById(int orderId) {
+    public Order getOrderById(Long orderId) {
         return null;
+    }
+    @Override
+    public List<Order> getUserOrders(Long userId) {
+        return orderRepository.findByUserId(userId);
+
     }
 
     @Override
-    public void cancelOrder(int orderId) {
+    public void cancelOrder(Long orderId) {
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new RuntimeException("Order not found with id: " + orderId));
+            if (order.getOrderStatus() == OrderStatus.PENDING) {
+                order.setOrderStatus(OrderStatus.CANCELED);
+                orderRepository.save(order);
+            } else {
+                throw new RuntimeException("Only pending orders can be canceled");
+            }
 
     }
 }

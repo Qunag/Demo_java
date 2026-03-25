@@ -21,7 +21,7 @@ import java.util.Set;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int orderId ;
+    private Long orderId ;
     private LocalDate orderDate ;
     private BigDecimal totalAmount ;
 
@@ -30,6 +30,10 @@ public class Order {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL , orphanRemoval = true)
     private Set<OrderItem> orderItems = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user ;
 
 
 }

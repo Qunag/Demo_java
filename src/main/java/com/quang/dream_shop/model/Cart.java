@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -25,6 +23,7 @@ public class Cart {
     private Set<CartItem> items = new HashSet<>();
 
     @OneToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
 
