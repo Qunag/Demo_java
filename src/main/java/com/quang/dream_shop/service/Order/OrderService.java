@@ -1,6 +1,8 @@
 package com.quang.dream_shop.service.Order;
 
+import com.quang.dream_shop.dto.OrderDto;
 import com.quang.dream_shop.enums.OrderStatus;
+import com.quang.dream_shop.exception.ResourceNotFoundException;
 import com.quang.dream_shop.model.Cart;
 import com.quang.dream_shop.model.Order;
 import com.quang.dream_shop.model.OrderItem;
@@ -9,6 +11,7 @@ import com.quang.dream_shop.repository.OrderRepository;
 import com.quang.dream_shop.repository.ProductRepository;
 import com.quang.dream_shop.service.Cart.ICartService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -23,6 +26,7 @@ public class OrderService implements IOrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final ICartService cartService;
+    private final ModelMapper modelMapper;
 
 
     private Order createOrder (Cart cart){
@@ -74,12 +78,15 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public Order getOrderById(Long orderId) {
-        return null;
+    public OrderDto getOrderById(Long orderId) {
+        return orderRepository.findById(orderId)
+                .map(this :: convertToDto)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
     }
     @Override
-    public List<Order> getUserOrders(Long userId) {
-        return orderRepository.findByUserId(userId);
+    public List<OrderDto> getUserOrders(Long userId) {
+        List<Order> orders =  orderRepository.findByUserId(userId);
+        return  orders.stream().map(this :: convertToDto).toList();
 
     }
 
@@ -94,5 +101,9 @@ public class OrderService implements IOrderService {
                 throw new RuntimeException("Only pending orders can be canceled");
             }
 
+    }
+
+    private OrderDto convertToDto(Order order) {
+        return modelMapper.map(order, OrderDto.class);
     }
 }

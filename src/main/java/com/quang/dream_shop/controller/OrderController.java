@@ -1,12 +1,15 @@
 package com.quang.dream_shop.controller;
 
 
+import com.quang.dream_shop.dto.OrderDto;
 import com.quang.dream_shop.model.Order;
 import com.quang.dream_shop.response.ApiResponse;
 import com.quang.dream_shop.service.Order.IOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -29,7 +32,7 @@ public class OrderController {
     @GetMapping("/{orderId}/order")
     public ResponseEntity<ApiResponse> getOrderById(@PathVariable Long orderId) {
         try {
-            Order order = orderService.getOrderById(orderId);
+            OrderDto order = orderService.getOrderById(orderId);
             return ResponseEntity.ok(new ApiResponse("Order retrieved successfully", order));
 
         } catch (Exception e) {
@@ -40,7 +43,7 @@ public class OrderController {
     @GetMapping("/{userId}/order")
     public ResponseEntity<ApiResponse> getUserOrders(@PathVariable Long userId) {
         try {
-            var orders = orderService.getUserOrders(userId);
+            List<OrderDto> orders = orderService.getUserOrders(userId);
             return ResponseEntity.ok(new ApiResponse("User orders retrieved successfully", orders));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new ApiResponse("Failed to retrieve user orders", e.getMessage()));
