@@ -1,5 +1,6 @@
 package com.quang.dream_shop.service.user;
 
+import com.quang.dream_shop.dto.UserDto;
 import com.quang.dream_shop.exception.AlreadyExistsException;
 import com.quang.dream_shop.exception.ResourceNotFoundException;
 import com.quang.dream_shop.model.User;
@@ -7,6 +8,7 @@ import com.quang.dream_shop.repository.UserRepository;
 import com.quang.dream_shop.request.CreateUserRequest;
 import com.quang.dream_shop.request.UpdateUserRequest;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -16,6 +18,7 @@ import java.util.Optional;
 public class UserService implements IUserService {
 
     private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
 
 
 
@@ -23,6 +26,7 @@ public class UserService implements IUserService {
     public User getUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
     }
 
     @Override
@@ -55,5 +59,15 @@ public class UserService implements IUserService {
                 .ifPresentOrElse(userRepository::delete, () -> {;
                     throw new ResourceNotFoundException("User not found");
                 });
+    }
+
+    @Override
+    public UserDto convertUserToDto(User user) {
+        return modelMapper.map(user, UserDto.class);
+    }
+
+    @Override
+    public User getAuthenticatedUser() {
+        return null;
     }
 }
