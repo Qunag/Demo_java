@@ -14,4 +14,5 @@ public interface IOrderService {
 
     void cancelOrder(Long orderId);
 
+    OrderDto convertToDto(Order order);
 }

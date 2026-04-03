@@ -57,7 +57,6 @@ public class CartService implements ICartService {
         if (existingCart != null) {
             return existingCart;
         }
-
         Cart newCart = new Cart();
         newCart.setUser(user);
         newCart.setTotalAmount(BigDecimal.ZERO);

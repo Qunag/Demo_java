@@ -3,11 +3,10 @@ package com.quang.dream_shop.controller;
 
 import com.quang.dream_shop.exception.ResourceNotFoundException;
 import com.quang.dream_shop.model.Cart;
-import com.quang.dream_shop.model.CartItem;
 import com.quang.dream_shop.model.User;
 import com.quang.dream_shop.response.ApiResponse;
 
-import com.quang.dream_shop.service.Cart.CartService;
+
 import com.quang.dream_shop.service.Cart.ICartItemService;
 import com.quang.dream_shop.service.Cart.ICartService;
 import com.quang.dream_shop.service.user.IUserService;
