@@ -20,7 +20,7 @@ public class JwtUtils {
 
     @Value("${auth.jwt.secret}")
     private String jwtSecret;
-    @Value("{auth.jwt.expiration}")
+    @Value("${auth.jwt.expiration}")
     private int expirationTime;
 
     private String jwtPrefix;
